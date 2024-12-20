@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
@@ -8,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Modal,
 } from 'react-native';
 
 const App = () => {
@@ -19,25 +19,24 @@ const App = () => {
     { id: '4', product: 'Crop Solution', region: 'East', bid: null, bidCount: 0 },
   ];
 
-  const [userRegion, setUserRegion] = useState('North'); // Set user region
+  const [userRegion, setUserRegion] = useState('North');
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [bids, setBids] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
 
   useEffect(() => {
-    // Filter orders based on user region
     const regionFiltered = orders.filter(order => order.region === userRegion);
     setFilteredOrders(regionFiltered);
   }, [userRegion]);
 
   const handleLogout = () => {
-    // Logout logic here
     console.log('User logged out');
   };
 
   const handleBid = (orderId, bidAmount) => {
     setBids({ ...bids, [orderId]: bidAmount });
 
-    // Update bid count for the order
     const updatedOrders = filteredOrders.map(order => {
       if (order.id === orderId) {
         return { ...order, bidCount: order.bidCount + 1 };
@@ -47,6 +46,17 @@ const App = () => {
 
     setFilteredOrders(updatedOrders);
     console.log(`Bid placed on order ${orderId}: ${bidAmount}`);
+  };
+
+  const openOrderDetails = (orderId) => {
+    const order = filteredOrders.find(o => o.id === orderId);
+    setOrderDetails(order);
+    setModalVisible(true);
+  };
+
+  const closeOrderDetails = () => {
+    setModalVisible(false);
+    setOrderDetails(null);
   };
 
   return (
@@ -84,10 +94,40 @@ const App = () => {
               </TouchableOpacity>
               <Text style={styles.bidText}>Your Bid: {bids[item.id] || 'None'}</Text>
               <Text style={styles.bidCountText}>Number of Bids: {item.bidCount}</Text>
+              
+              {/* Order Details Button */}
+              <TouchableOpacity
+                style={styles.orderDetailsButton}
+                onPress={() => openOrderDetails(item.id)}
+              >
+                <Text style={styles.orderDetailsButtonText}>View Details</Text>
+              </TouchableOpacity>
             </View>
           )}
         />
       </View>
+
+      {/* Modal to Show Order Details */}
+      {orderDetails && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeOrderDetails}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Order Details</Text>
+              <Text style={styles.modalText}>Product: {orderDetails.product}</Text>
+              <Text style={styles.modalText}>Region: {orderDetails.region}</Text>
+              <Text style={styles.modalText}>Bids: {orderDetails.bidCount}</Text>
+              <TouchableOpacity style={styles.closeModalButton} onPress={closeOrderDetails}>
+                <Text style={styles.closeModalText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -175,6 +215,48 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 14,
     color: '#FF5722',
+  },
+  orderDetailsButton: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignSelf: 'flex-end',
+  },
+  orderDetailsButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  closeModalButton: {
+    backgroundColor: '#FF5722',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  closeModalText: {
+    color: '#fff',
+    fontSize: 14,
   },
 });
 

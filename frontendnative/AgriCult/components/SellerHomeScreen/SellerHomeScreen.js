@@ -13,9 +13,9 @@ import {
 const App = () => {
   // Sample data for orders
   const orders = [
-    { id: '1', product: 'Weed', region: 'North', bid: null, bidCount: 0 },
+    { id: '1', product: 'Wheat', region: 'North', bid: null, bidCount: 0 },
     { id: '2', product: 'Lime', region: 'South', bid: null, bidCount: 0 },
-    { id: '3', product: 'Ganja', region: 'North', bid: null, bidCount: 0 },
+    { id: '3', product: 'Grapes', region: 'North', bid: null, bidCount: 0 },
     { id: '4', product: 'Crop Solution', region: 'East', bid: null, bidCount: 0 },
   ];
 
